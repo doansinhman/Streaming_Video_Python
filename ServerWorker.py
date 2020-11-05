@@ -6,6 +6,7 @@ from RtpPacket import RtpPacket
 
 
 class ServerWorker:
+    # Define some constances
     SETUP = 'SETUP'
     PLAY = 'PLAY'
     PAUSE = 'PAUSE'
@@ -14,11 +15,12 @@ class ServerWorker:
     INIT = 0
     READY = 1
     PLAYING = 2
-    state = INIT
 
     OK_200 = 0
     FILE_NOT_FOUND_404 = 1
     CON_ERR_500 = 2
+
+    state = INIT  # Initial state
 
     clientInfo = {}
 
@@ -53,7 +55,6 @@ class ServerWorker:
         # Process SETUP request
         if requestType == self.SETUP:
             if self.state == self.INIT:
-                # Update state
                 print("processing SETUP\n")
 
                 try:
@@ -79,7 +80,6 @@ class ServerWorker:
 
                 # Create a new socket for RTP/UDP
                 self.clientInfo["rtpSocket"] = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
                 self.replyRtsp(self.OK_200, seq[1])
 
                 # Create a new thread and start sending RTP packets
@@ -92,17 +92,13 @@ class ServerWorker:
             if self.state == self.PLAYING:
                 print("processing PAUSE\n")
                 self.state = self.READY
-
                 self.clientInfo['event'].set()
-
                 self.replyRtsp(self.OK_200, seq[1])
 
         # Process TEARDOWN request
         elif requestType == self.TEARDOWN:
             print("processing TEARDOWN\n")
-
             self.clientInfo['event'].set()
-
             self.replyRtsp(self.OK_200, seq[1])
 
             # Close the RTP socket
@@ -127,9 +123,6 @@ class ServerWorker:
                     self.clientInfo['rtpSocket'].sendto(self.makeRtp(data, frameNumber), (address, port))
                 except:
                     print("Connection Error")
-                    # print('-'*60)
-                    # traceback.print_exc(file=sys.stdout)
-                    # print('-'*60)
 
     def makeRtp(self, payload, frameNbr):
         """RTP-packetize the video data."""
@@ -143,9 +136,7 @@ class ServerWorker:
         ssrc = 0
 
         rtpPacket = RtpPacket()
-
         rtpPacket.encode(version, padding, extension, cc, seqnum, marker, pt, ssrc, payload)
-
         return rtpPacket.getPacket()
 
     def replyRtsp(self, code, seq):
