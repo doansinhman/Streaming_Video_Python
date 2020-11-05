@@ -1,6 +1,6 @@
 class VideoStream:
     def __init__(self, filename):
-		"""Attach to media file"""
+        """Attach to media file"""
         self.filename = filename
         try:
             self.file = open(filename, 'rb')
@@ -10,8 +10,8 @@ class VideoStream:
 
     def nextFrame(self):
         """Get next frame."""
-        framelength = int(self.file.read(5))  	# Get the framelength from the first 5 bits
-        data = self.file.read(framelength)		# Read next frame
+        framelength = int(self.file.read(5))  # Get the framelength from the first 5 bits
+        data = self.file.read(framelength)  # Read next frame
         self.frameNum += 1
         return data
 
