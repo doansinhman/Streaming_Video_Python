@@ -106,7 +106,7 @@ class ServerWorker:
             self.clientInfo['rtpSocket'].close()
         elif requestType == self.DESCRIBE:
             print("processing DESCRIBE\n")
-            description = """Not Implemented!"""
+            description = "v=0\r\ns={}\r\nm=Real Time Streaming Protocol (RTSP)\r\nm=Motion JPEG (M-JPEG/MJPEG) ".format(self.clientInfo['session'])
             self.replyRtsp(self.OK_200, seq[1], description)
 
     def sendRtp(self):
@@ -150,8 +150,7 @@ class ServerWorker:
             # print("200 OK")
             reply = 'RTSP/1.0 200 OK\nCSeq: ' + seq + '\nSession: ' + str(self.clientInfo['session'])
             if data != None:  # Use for describe reply
-                reply += '\n' + data
-                print(reply)
+                reply += '\n\n' + data
 
             connSocket = self.clientInfo['rtspSocket'][0]
             connSocket.send(reply.encode())
