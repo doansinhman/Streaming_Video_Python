@@ -11,6 +11,7 @@ class ServerWorker:
     PLAY = 'PLAY'
     PAUSE = 'PAUSE'
     TEARDOWN = 'TEARDOWN'
+    DESCRIBE = 'DESCRIBE'
 
     INIT = 0
     READY = 1
@@ -103,6 +104,10 @@ class ServerWorker:
 
             # Close the RTP socket
             self.clientInfo['rtpSocket'].close()
+        elif requestType == self.DESCRIBE:
+            print("processing DESCRIBE\n")
+            description = """Not Implemented!"""
+            self.replyRtsp(self.OK_200, seq[1], description)
 
     def sendRtp(self):
         """Send RTP packets over UDP."""
@@ -139,11 +144,15 @@ class ServerWorker:
         rtpPacket.encode(version, padding, extension, cc, seqnum, marker, pt, ssrc, payload)
         return rtpPacket.getPacket()
 
-    def replyRtsp(self, code, seq):
+    def replyRtsp(self, code, seq, data=None):
         """Send RTSP reply to the client."""
         if code == self.OK_200:
             # print("200 OK")
             reply = 'RTSP/1.0 200 OK\nCSeq: ' + seq + '\nSession: ' + str(self.clientInfo['session'])
+            if data != None:  # Use for describe reply
+                reply += '\n' + data
+                print(reply)
+
             connSocket = self.clientInfo['rtspSocket'][0]
             connSocket.send(reply.encode())
 
