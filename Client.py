@@ -18,6 +18,7 @@ class Client:
     PLAY = 1
     PAUSE = 2
     TEARDOWN = 3
+    DESCRIBE = 4
 
     state = INIT  # Initial state
 
@@ -40,6 +41,7 @@ class Client:
         self.PLAY_STR = 'PLAY'
         self.PAUSE_STR = 'PAUSE'
         self.TEARDOWN_STR = 'TEARDOWN'
+        self.DESCRIBE_STR = 'DESCRIBE'
 
         self.RTSP_VER = "RTSP/1.0"
         self.TRANSPORT = "RTP/UDP"
@@ -70,6 +72,12 @@ class Client:
         self.teardown["command"] = self.exitClient
         self.teardown.grid(row=1, column=3, padx=2, pady=2)
 
+        # Create Describe button
+        self.teardown = Button(self.master, width=20, padx=3, pady=3)
+        self.teardown["text"] = "Describe"
+        self.teardown["command"] = self.getDescribe
+        self.teardown.grid(row=1, column=4, padx=2, pady=2)
+
         # Create a label to display the movie
         self.label = Label(self.master, height=19)
         self.label.grid(row=0, column=0, columnspan=4, sticky=W + E + N + S, padx=5, pady=5)
@@ -78,6 +86,11 @@ class Client:
         """Setup button handler."""
         if self.state == self.INIT:
             self.sendRtspRequest(self.SETUP)
+
+    def getDescribe(self):
+        """Get infomation about playing file."""
+        if self.state != self.INIT:
+            self.sendRtspRequest(self.DESCRIBE)
 
     def exitClient(self):
         """Teardown button handler."""
@@ -172,6 +185,11 @@ class Client:
             request = "{} {} {}\nCSeq: {}\nSession: {}".format(self.TEARDOWN_STR, self.fileName, self.RTSP_VER, self.rtspSeq, self.sessionId)
             self.requestSent = self.TEARDOWN
 
+        elif requestCode == self.DESCRIBE:
+            self.rtspSeq = self.rtspSeq + 1
+            request = "{} {} {}\nCSeq: {}\nSession: {}".format(self.DESCRIBE_STR, self.fileName, self.RTSP_VER, self.rtspSeq, self.sessionId)
+            self.requestSent = self.TEARDOWN
+
         else:
             return
 
@@ -232,7 +250,7 @@ class Client:
             self.state = self.READY
             self.rtpSocket.bind(('', self.rtpPort))
         except:
-            messagebox.showwarning('Unable to Bind', 'Unable to bind PORT=%d' % self.rtpPort)
+            messagebox.showwarning('Unable to Bind', 'Unable to bind PORT={}'.format(self.rtpPort))
 
     def handler(self):
         """Handler on explicitly closing the GUI window."""
