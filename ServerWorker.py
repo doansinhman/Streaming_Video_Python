@@ -104,9 +104,11 @@ class ServerWorker:
 
             # Close the RTP socket
             self.clientInfo['rtpSocket'].close()
+
+        # Process DESCRIBE request
         elif requestType == self.DESCRIBE:
             print("processing DESCRIBE\n")
-            description = "v=0\r\ns={}\r\na=Real Time Streaming Protocol (RTSP)\r\na=Motion JPEG (M-JPEG/MJPEG) ".format(self.clientInfo['session'])
+            description = "v=0\r\ns={}\r\na=Real Time Streaming Protocol (RTSP)\r\na=Motion JPEG (M-JPEG/MJPEG)".format(self.clientInfo['session'])
             self.replyRtsp(self.OK_200, seq[1], description)
 
     def sendRtp(self):

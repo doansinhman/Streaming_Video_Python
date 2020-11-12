@@ -188,7 +188,7 @@ class Client:
         elif requestCode == self.DESCRIBE:
             self.rtspSeq = self.rtspSeq + 1
             request = "{} {} {}\nCSeq: {}\nSession: {}".format(self.DESCRIBE_STR, self.fileName, self.RTSP_VER, self.rtspSeq, self.sessionId)
-            self.requestSent = self.TEARDOWN
+            self.requestSent = self.DESCRIBE
 
         else:
             return
@@ -239,6 +239,11 @@ class Client:
                 elif self.requestSent == self.TEARDOWN:
                     self.state = self.INIT
                     self.teardownAcked = 1
+
+                elif self.requestSent == self.DESCRIBE:
+                    message = data.split(b'\r\n')
+                    info = "Protocol: {}\nFile type: {}".format(message[-2][2:].decode(), message[-1][2:].decode())
+                    messagebox.showinfo("Information", info)
 
     def openRtpPort(self):
         """Open RTP socket binded to a specified port."""
