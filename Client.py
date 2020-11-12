@@ -159,7 +159,7 @@ class Client:
         try:
             self.rtspSocket.connect((self.serverAddr, self.serverPort))
         except:
-            messagebox.showwarning('Connection Failed', 'Connection to \'{}\' failed.'.format(serverAddr))
+            messagebox.showwarning('Connection Failed', 'Connection to \'{}\' failed.'.format(self.serverAddr))
 
     def sendRtspRequest(self, requestCode):
         """Send RTSP request to the server."""
