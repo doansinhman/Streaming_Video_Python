@@ -1,6 +1,7 @@
 from tkinter import Button, Label, W, E, N, S, messagebox
 from PIL import Image, ImageTk
 import socket, threading, sys, traceback, os
+import time
 
 from RtpPacket import RtpPacket
 
@@ -25,6 +26,18 @@ class Client:
     def __init__(self, master, serveraddr, serverport, rtpport, filename):
         self.master = master
         self.master.protocol("WM_DELETE_WINDOW", self.handler)
+
+        # Statistic variables
+        self.statStartTime = 0
+        self.statTotalPlayTime = 0
+        self.statTotalByte = 0
+        self.statLostPack = 0
+        self.statHighestSq = 0
+        self.statLostRate = 0
+        self.statDataRate = 0
+        self.framelength = 0
+        #--------------------
+
         self.createWidgets()
         self.serverAddr = serveraddr
         self.serverPort = int(serverport)
@@ -82,6 +95,21 @@ class Client:
         self.label = Label(self.master, height=19)
         self.label.grid(row=0, column=0, columnspan=4, sticky=W + E + N + S, padx=5, pady=5)
 
+        self.label1 = Label(self.master, text="Total byte received: ")
+        self.label1.grid(row=2, column=0, padx=2, pady=2, sticky=E)
+        self.labelTotalByte = Label(self.master)
+        self.labelTotalByte.grid(row=2, column=1, padx=2, pady=2, sticky=E)
+
+        self.label2 = Label(self.master, text="Packet lost rate: ")
+        self.label2.grid(row=3, column=0, padx=2, pady=2, sticky=E)
+        self.labelLostRate = Label(self.master)
+        self.labelLostRate.grid(row=3, column=1, padx=2, pady=2, sticky=E)
+
+        self.label3 = Label(self.master, text="Data rate: ")
+        self.label3.grid(row=4, column=0, padx=2, pady=2, sticky=E)
+        self.labelData = Label(self.master)
+        self.labelData.grid(row=4, column=1, padx=2, pady=2, sticky=E)
+
     def setupMovie(self):
         """Setup button handler."""
         if self.state == self.INIT:
@@ -111,18 +139,43 @@ class Client:
             self.playEvent = threading.Event()
             self.playEvent.clear()
             self.sendRtspRequest(self.PLAY)
+            self.statStartTime = time.time()
 
     def listenRtp(self):
         """Listen for RTP packets."""
         while True:
             try:
                 data = self.rtpSocket.recv(20480)
+
+                # Time 
+                curTime = time.time()
+                self.statTotalPlayTime += curTime - self.statStartTime
+                self.statStartTime = curTime
+                #-----------------------------
+
                 if data:
                     rtpPacket = RtpPacket()
                     rtpPacket.decode(data)
 
                     currFrameNbr = rtpPacket.seqNum()
                     print("Current Seq Num: " + str(currFrameNbr))
+
+                # Calculate statistics
+
+                    # Data rate
+                    self.statDataRate = 0 if self.statTotalPlayTime == 0 else (self.statTotalByte/self.statTotalPlayTime)
+
+                    # Lost rate
+                    if currFrameNbr != self.frameNbr + 1:
+                        self.statLostPack += 1
+                    if currFrameNbr > self.statHighestSq:
+                        self.statHighestSq = currFrameNbr
+                    if self.statHighestSq != 0:
+                        self.statLostRate = self.statLostPack/self.statHighestSq
+
+                    # Total data 
+                    self.statTotalByte += len(data)
+                #----------------------------------------------------
 
                     if currFrameNbr > self.frameNbr:  # Discard the old packet
                         self.frameNbr = currFrameNbr
@@ -152,6 +205,10 @@ class Client:
         photo = ImageTk.PhotoImage(Image.open(imageFile))
         self.label.configure(image=photo, height=288)
         self.label.image = photo
+
+        self.labelTotalByte['text'] = str(self.statTotalByte) + " bytes"
+        self.labelLostRate['text'] = self.statLostRate
+        self.labelData['text'] = str(self.statDataRate) + " bytes/s" 
 
     def connectToServer(self):
         """Connect to the Server. Start a new RTSP/TCP session."""
