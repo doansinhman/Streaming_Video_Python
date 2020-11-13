@@ -59,13 +59,21 @@ class Client:
         self.RTSP_VER = "RTSP/1.0"
         self.TRANSPORT = "RTP/UDP"
 
+        # Remove SETUP button
+        self.setupMovie()
     def createWidgets(self):
         """Build GUI."""
         # Create Setup button
-        self.setup = Button(self.master, width=20, padx=3, pady=3)
-        self.setup["text"] = "Setup"
-        self.setup["command"] = self.setupMovie
-        self.setup.grid(row=1, column=0, padx=2, pady=2)
+        # self.setup = Button(self.master, width=20, padx=3, pady=3)
+        # self.setup["text"] = "Setup"
+        # self.setup["command"] = self.setupMovie
+        # self.setup.grid(row=1, column=0, padx=2, pady=2)
+
+        # Create Describe button
+        self.teardown = Button(self.master, width=20, padx=3, pady=3)
+        self.teardown["text"] = "Describe"
+        self.teardown["command"] = self.getDescribe
+        self.teardown.grid(row=1, column=0, padx=2, pady=2)
 
         # Create Play button
         self.start = Button(self.master, width=20, padx=3, pady=3)
@@ -85,30 +93,24 @@ class Client:
         self.teardown["command"] = self.exitClient
         self.teardown.grid(row=1, column=3, padx=2, pady=2)
 
-        # Create Describe button
-        self.teardown = Button(self.master, width=20, padx=3, pady=3)
-        self.teardown["text"] = "Describe"
-        self.teardown["command"] = self.getDescribe
-        self.teardown.grid(row=1, column=4, padx=2, pady=2)
-
         # Create a label to display the movie
         self.label = Label(self.master, height=19)
         self.label.grid(row=0, column=0, columnspan=4, sticky=W + E + N + S, padx=5, pady=5)
 
         self.label1 = Label(self.master, text="Total byte received: ")
-        self.label1.grid(row=2, column=0, padx=2, pady=2, sticky=E)
+        self.label1.grid(row=2, column=1, padx=2, pady=2, sticky=E)
         self.labelTotalByte = Label(self.master)
-        self.labelTotalByte.grid(row=2, column=1, padx=2, pady=2, sticky=E)
+        self.labelTotalByte.grid(row=2, column=2, padx=2, pady=2, sticky=E)
 
         self.label2 = Label(self.master, text="Packet lost rate: ")
-        self.label2.grid(row=3, column=0, padx=2, pady=2, sticky=E)
+        self.label2.grid(row=3, column=1, padx=2, pady=2, sticky=E)
         self.labelLostRate = Label(self.master)
-        self.labelLostRate.grid(row=3, column=1, padx=2, pady=2, sticky=E)
+        self.labelLostRate.grid(row=3, column=2, padx=2, pady=2, sticky=E)
 
         self.label3 = Label(self.master, text="Data rate: ")
-        self.label3.grid(row=4, column=0, padx=2, pady=2, sticky=E)
+        self.label3.grid(row=4, column=1, padx=2, pady=2, sticky=E)
         self.labelData = Label(self.master)
-        self.labelData.grid(row=4, column=1, padx=2, pady=2, sticky=E)
+        self.labelData.grid(row=4, column=2, padx=2, pady=2, sticky=E)
 
     def setupMovie(self):
         """Setup button handler."""
