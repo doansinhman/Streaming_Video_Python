@@ -36,7 +36,7 @@ class Client:
         self.statLostRate = 0
         self.statDataRate = 0
         self.framelength = 0
-        #--------------------
+        # --------------------
 
         self.createWidgets()
         self.serverAddr = serveraddr
@@ -147,11 +147,11 @@ class Client:
             try:
                 data = self.rtpSocket.recv(20480)
 
-                # Time 
+                # Time
                 curTime = time.time()
                 self.statTotalPlayTime += curTime - self.statStartTime
                 self.statStartTime = curTime
-                #-----------------------------
+                # -----------------------------
 
                 if data:
                     rtpPacket = RtpPacket()
@@ -160,10 +160,10 @@ class Client:
                     currFrameNbr = rtpPacket.seqNum()
                     print("Current Seq Num: " + str(currFrameNbr))
 
-                # Calculate statistics
+                    # Calculate statistics
 
                     # Data rate
-                    self.statDataRate = 0 if self.statTotalPlayTime == 0 else (self.statTotalByte/self.statTotalPlayTime)
+                    self.statDataRate = 0 if self.statTotalPlayTime == 0 else (self.statTotalByte / self.statTotalPlayTime)
 
                     # Lost rate
                     if currFrameNbr != self.frameNbr + 1:
@@ -171,11 +171,11 @@ class Client:
                     if currFrameNbr > self.statHighestSq:
                         self.statHighestSq = currFrameNbr
                     if self.statHighestSq != 0:
-                        self.statLostRate = self.statLostPack/self.statHighestSq
+                        self.statLostRate = self.statLostPack / self.statHighestSq
 
-                    # Total data 
+                    # Total data
                     self.statTotalByte += len(data)
-                #----------------------------------------------------
+                    # ----------------------------------------------------
 
                     if currFrameNbr > self.frameNbr:  # Discard the old packet
                         self.frameNbr = currFrameNbr
@@ -207,8 +207,8 @@ class Client:
         self.label.image = photo
 
         self.labelTotalByte['text'] = str(self.statTotalByte) + " bytes"
-        self.labelLostRate['text'] = self.statLostRate
-        self.labelData['text'] = str(self.statDataRate) + " bytes/s" 
+        self.labelLostRate['text'] = "{:.2f}".format(self.statLostRate)
+        self.labelData['text'] = "{:.2f} bytes/s".format(self.statDataRate)
 
     def connectToServer(self):
         """Connect to the Server. Start a new RTSP/TCP session."""
