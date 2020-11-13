@@ -37,7 +37,7 @@ class ServerWorker:
         while True:
             data = connSocket.recv(256)
             if data:
-                print("Data received:\n" + data.decode("utf-8"))
+                print("\nData received:\n" + data.decode("utf-8"))
                 self.processRtspRequest(data.decode("utf-8"))
 
     def processRtspRequest(self, data):
@@ -56,7 +56,7 @@ class ServerWorker:
         # Process SETUP request
         if requestType == self.SETUP:
             if self.state == self.INIT:
-                print("processing SETUP\n")
+                print("processing SETUP")
 
                 try:
                     self.clientInfo['videoStream'] = VideoStream(filename)
@@ -76,7 +76,7 @@ class ServerWorker:
         # Process PLAY request
         elif requestType == self.PLAY:
             if self.state == self.READY:
-                print("processing PLAY\n")
+                print("processing PLAY")
                 self.state = self.PLAYING
 
                 # Create a new socket for RTP/UDP
@@ -91,14 +91,14 @@ class ServerWorker:
         # Process PAUSE request
         elif requestType == self.PAUSE:
             if self.state == self.PLAYING:
-                print("processing PAUSE\n")
+                print("processing PAUSE")
                 self.state = self.READY
                 self.clientInfo['event'].set()
                 self.replyRtsp(self.OK_200, seq[1])
 
         # Process TEARDOWN request
         elif requestType == self.TEARDOWN:
-            print("processing TEARDOWN\n")
+            print("processing TEARDOWN")
             self.clientInfo['event'].set()
             self.replyRtsp(self.OK_200, seq[1])
 
@@ -107,7 +107,7 @@ class ServerWorker:
 
         # Process DESCRIBE request
         elif requestType == self.DESCRIBE:
-            print("processing DESCRIBE\n")
+            print("processing DESCRIBE")
             description = "v=0\r\ns={}\r\na=Real Time Streaming Protocol (RTSP)\r\na=Motion JPEG (M-JPEG/MJPEG)".format(self.clientInfo['session'])
             self.replyRtsp(self.OK_200, seq[1], description)
 
@@ -125,7 +125,7 @@ class ServerWorker:
                 frameNumber = self.clientInfo['videoStream'].frameNbr()
                 try:
                     address = self.clientInfo['rtspSocket'][1][0]
-                    print(self.clientInfo['rtpPort'])
+                    print("Sent frame", frameNumber)
                     port = int(self.clientInfo['rtpPort'])
                     self.clientInfo['rtpSocket'].sendto(self.makeRtp(data, frameNumber), (address, port))
                 except:

@@ -158,7 +158,7 @@ class Client:
                     rtpPacket.decode(data)
 
                     currFrameNbr = rtpPacket.seqNum()
-                    print("Current Seq Num: " + str(currFrameNbr))
+                    print("Received frame", currFrameNbr)
 
                     # Calculate statistics
 
@@ -188,8 +188,11 @@ class Client:
                 # Upon receiving ACK for TEARDOWN request,
                 # close the RTP socket
                 if self.teardownAcked == 1:
-                    self.rtpSocket.shutdown(socket.SHUT_RDWR)
-                    self.rtpSocket.close()
+                    try:
+                        self.rtpSocket.shutdown(socket.SHUT_RDWR)
+                        self.rtpSocket.close()
+                    except:
+                        pass
                     break
 
     def writeFrame(self, data):
