@@ -275,7 +275,12 @@ class Client:
 
     def parseRtspReply(self, data):
         """Parse the RTSP reply from the server."""
+        
         lines = data.split(b'\n')
+        if '404 NOT_FOUND' in data.decode(): 
+            messagebox.showwarning("Warning", "File not found!")
+            self.exitClient()
+            
         seqNum = int(lines[1].split(b' ')[1])
 
         # Process only if the server reply's sequence number is the same as the request's

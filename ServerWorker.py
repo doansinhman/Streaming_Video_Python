@@ -160,5 +160,8 @@ class ServerWorker:
         # Error messages
         elif code == self.FILE_NOT_FOUND_404:
             print("404 NOT FOUND")
+            reply = 'RTSP/1.0 404 NOT_FOUND\nCSeq: ' + seq
+            connSocket = self.clientInfo['rtspSocket'][0]
+            connSocket.send(reply.encode())
         elif code == self.CON_ERR_500:
             print("500 CONNECTION ERROR")

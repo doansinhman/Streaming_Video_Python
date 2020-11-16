@@ -1,0 +1,5 @@
+digraph "classes_myproject" {
+charset="utf-8"
+rankdir=BT
+"0" [label="{Client|INIT : int\lPAUSE : int\lPAUSE_STR : str\lPLAY : int\lPLAYING : int\lPLAY_STR : str\lREADY : int\lRTSP_VER : str\lSETUP : int\lSETUP_STR : str\lTEARDOWN : int\lTEARDOWN_STR : str\lTRANSPORT : str\lfileName\lframeNbr : int\llabel : Label\lmaster\lpause : Button\lplayEvent : Event\lrequestSent : int\lrtpPort : int\lrtpSocket : socket\lrtspSeq : int\lrtspSocket : socket\lserverAddr\lserverPort : int\lsessionId : int\lsetup : Button\lstart : Button\lstate : int\lstate : int\lteardown : Button\lteardownAcked : int\l|connectToServer()\lcreateWidgets()\lexitClient()\lhandler()\llistenRtp()\lopenRtpPort()\lparseRtspReply(data)\lpauseMovie()\lplayMovie()\lrecvRtspReply()\lsendRtspRequest(requestCode)\lsetupMovie()\lupdateMovie(imageFile)\lwriteFrame(data)\l}", shape="record"];
+}
